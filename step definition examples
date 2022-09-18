@@ -1,0 +1,414 @@
+
+
+
+   The Java codes presented here are from the Step Definitions classes of my previous projects or self-training exercises. Those methods were written according to the Page Object Model under Selenium test framework suite, so locators and their page classes are not presented here and I will present some locator examples a different file.  
+
+   In this file, I try to show my Java codes, so names of the locators and methods were changed or removed deliberately.
+
+   I tried to write some explanations under the methods to explain what the relevant code aims to do.
+
+    
+
+
+    @And("Verify that the names {string} and {string} are in workers section of the department information page")
+    public void verifyThatTheNamesAndAreInWorkersSectionOfTheDepartmentInformationPage(String firstName, String secondName) throws InterruptedException {
+
+        List<WebElement> names = elements.departmentInformationPage().dip_nameList;
+
+        Thread.sleep(600);
+
+        int flag=0;
+
+        for (int i = 0; i < names.size(); i++) {
+
+            if (names.get(i).getAttribute("title").trim().equals(firstName)) {
+                flag++;
+            }
+        }
+
+        int count=0;
+
+        for (int i = 0; i < names.size(); i++) {
+
+            if (names.get(i).getAttribute("title").trim().equals(secondName)) {
+                count++;
+            }
+        }
+
+        if((flag > 0) && (count > 0)){
+            Assert.assertTrue(true);
+        }else{
+            Assert.fail();
+        }
+
+       // in this method, I take names from department information page and verify that the given two names exist in this page
+
+    }
+
+
+
+
+     @And("Verify the new starting time from time table page")
+    public void verify_the_new_starting_time_from_time_table_page() throws InterruptedException {
+
+        String startingMonthWord = "";
+
+        switch (startingMonth) {
+            case "01":
+                startingMonthWord = "January";
+                break;
+            case "02":
+                startingMonthWord = "February";
+                break;
+            case "03":
+                startingMonthWord = "March";
+                break;
+            case "04":
+                startingMonthWord = "April";
+                break;
+            case "05":
+                startingMonthWord = "May";
+                break;
+            case "06":
+                startingMonthWord = "June";
+                break;
+            case "07":
+                startingMonthWord = "July";
+                break;
+            case "08":
+                startingMonthWord = "August";
+                break;
+            case "09":
+                startingMonthWord = "September";
+                break;
+            case "10":
+                startingMonthWord = "October";
+                break;
+            case "11":
+                startingMonthWord = "November";
+                break;
+            case "12":
+               startingMonthWord = "December";
+                break;
+        }
+
+        String newStartingMonthYear = startingMonthWord + " " + startingYear;
+
+        JSUtils.scrollIntoVIewJS(elements.departmentInformationPage().dip_monthYearDetailedTime);
+              Thread.sleep(700);
+
+        while (!(elements.departmentInformationPage().dip_monthYearDetailedTime.getText().equals(newStartingMonthYear))){
+             Thread.sleep(700);
+             JSUtils.clickElementByJS(elements.departmentInformationPage().dip_backButtonMonthYearDetailedTime);
+        }
+
+        Thread.sleep(700);
+
+        String date = startingYear + "-" + startingMonth + "-" + startingDay;
+
+        WebElement newStartingTimeElement = Driver.getDriver().findElement(By.xpath("//*[@date='" + date + "']//*[@class='event-time']"));  // dynamic xpath used here
+        
+        Thread.sleep(500);
+
+        Assert.assertEquals(newStartingTime.trim(), newStartingTimeElement.getText().trim());
+
+
+
+       // the main aim is to change the starting time of a shift of an employer. in order to verify that the data has changed, I look at the time tables which are found with the month name and the year.  
+
+       // JSUtils, used above, is the class in utilities which has some useful javascript executor methods. In this method, I used scroll into view and click methods. Javascript executor is a great tool where our traditional methods do not work. 
+    }
+
+
+
+
+    @And("Enter data {string} in the Customer dropbox in Customer Representative window")
+    public void enterDataInTheCustomerDropboxInCustomerRepresentativeWindow(String customer) throws InterruptedException {
+
+        Thread.sleep(500);
+        elements.customerInformationPage().cip_customerTextbox.click();
+        Thread.sleep(500);
+        elements.customerInformationPage().cip_customerDataTextbox.sendKeys(customer);
+        Thread.sleep(500);
+        elements.customerInformationPage().cip_customerDataTextbox.sendKeys(Keys.ENTER);
+
+
+        // in this method, I send data to a textbox which includes a dropbox where we cannot use select class. First I click the textbox, then without selecting the data from the dropbox list, I send the data to the searchbox and then I click the only data that remianed in the dropbox list.
+    }
+
+
+
+    @Then("Select data {string} in the Action dropbox in Customer System window")
+    public void selectDataInTheActionDropboxInCustomerSystemWindow(String action) throws InterruptedException {
+        Thread.sleep(500);
+        Select actionDropboxList = new Select(elements.customerSystemPage().csw_actionDropBox);
+        actionDropboxList.selectByVisibleText(action);
+        
+
+         
+       // I am selecting an action data from a dropbox with select class.
+
+       // I used many hard waits (thread.sleep) so that the the webdriver and browser work in synchronization with each other. 
+    }
+
+   
+    
+
+    @Then("Verify that the name {string} is in the Sales Agent dropbox in Administrative options")
+    public void verify_that_the_name_is_in_the_sales_agent_dropbox_in_administrative_options(String salesAgent) throws InterruptedException {
+
+        Thread.sleep(500);
+        Assert.assertTrue(elements.supportTicketsCheckPage().sce_salesAgentTextbox.getAttribute("title").contains(salesAgent));
+
+
+        // verifying the sales agent name by using getAtribute method. In the attribute of the title, salesAgent exists and I used this in order to verify it.
+    }
+
+    
+    
+    @And("Verify that Description textbox in Product Update window is required field")
+    public void verifyThatDescriptionTextboxInProductUpdateWindowIsRequiredField() {
+                
+        Assert.assertEquals("true", elements.productUpdatePage().pu_descriptionTextboxVerify.getAttribute("required"));
+       
+       
+       // I verify the required field with the only tool I have, which is the value "required". I use the hidden attribute of it, which is "true". 
+    }
+
+     
+
+
+    @Then("Enter random email in the Email textbox in Customer Email Address window")
+    public void enterRandomEmailInTheEmailTextboxInCustomerEmailAddressWindow() throws InterruptedException {
+
+        staticEmail=elements.customerInformationPage().ci_emailTextbox.getAttribute("value");
+        Thread.sleep(500);
+
+        Random r = new Random();
+        int low = 10;
+        int high = 10000;
+        int randomNo = r.nextInt(high-low) + low;
+        
+        String stringResult = String.valueOf(randomNo);
+        Thread.sleep(500);
+        elements.customerInformationPage().stc_emailTextbox.clear();
+        Thread.sleep(500);
+        elements.customerInformationPage().stc_emailTextbox.sendKeys(stringResult+staticEmail);
+
+
+        // creating new customer email adress by using random class. I add random numbers to the customer's email, so that there won't be any data problem while we run those tests many times.
+    }
+
+
+
+    @Then("Verify that the product no. {string} is in export sales list page")
+    public void verifyThatTheProductNoIsInExportSalesListPage(String productNo) throws InterruptedException {
+        
+        Thread.sleep(500);
+        
+        int flag = 0;
+
+        for(int i = 0; i < elements.exportSalesListPage().es_productNoExportTransaction.size(); i++){
+            if(elements.exportSalesListPage().es_productNoExportTransaction.get(i).getText().equals(productNo)){
+                flag++;
+            }
+        }
+        if(flag > 0){
+            Assert.assertTrue(true);
+        }else{
+            Assert.fail();
+        }
+
+
+        // In this method, I serach a specific product number in export sales list page, transaction list. I go through the product numbers with for loop and use a flag for verifying it a step later. 
+    }
+
+    
+
+
+    @Then("Verify the warning when less than twenty characters are entered in the Description textbox in Product information window")
+    public void verify_the_warning_when_less_than_twenty_characters_are_entered_in_the_description_textbox_in_product_information_window() throws InterruptedException {
+        Thread.sleep(1000);
+        Assert.assertTrue(elements.productInformationPage().pi_descriptionTextBoxWarning.isDisplayed());
+        Thread.sleep(1000);
+
+      
+       // I verify the warning message with the isDisplayed() method if less than twenty characters were entered into tho the relevant textbox 
+    }
+
+
+
+
+    @And("Enter plus one minute data to the Starting Time textbox")
+    public void enter_plus_one_minute_data_to_the_starting_time_textbox() throws InterruptedException {
+
+        Thread.sleep(500);
+
+        String selectedDateTime = elements.timeManagementPage().stc_selectStartingDate.getAttribute("title");
+        String hour = selectedDateTime.substring(24, 26);
+        String minute = selectedDateTime.substring(27, 29);
+        firstStartingTime = hour + ":" + minute;
+
+        startingDay = selectedDateTime.substring(13, 15);
+        startingMonth = selectedDateTime.substring(16, 18);
+        startingYear = selectedDateTime.substring(19, 23);
+        int intNewMinute = Integer.parseInt(minute) + 1;
+
+        if(intNewMinute==60){
+            intNewMinute = 0;
+            int intHour = Integer.parseInt(hour) + 1;
+            hour = String.valueOf(intHour);
+        }
+
+        String strNewMinute = String.valueOf(intNewMinute);
+        if(intNewMinute < 10){
+            strNewMinute = "0" + strNewMinute;
+        }
+
+        elements.timeManagementPage().stc_newStartingTime.sendKeys(hour + strNewMinute);
+        newCheckInTime = hour + ":" + strNewMinute;
+
+
+        // In this method, I tried to create a sustainable data production method which added one minute to the starting time of the worker. I use this data in other methods. 
+        // I had to think about some details here, such as if the minute is at 59, then the new minute becomes 00 and the hour becomes plus one. 
+        // In the same way, if the minute is less than 10, I had to add 0 to the left when I convert it to a String.  
+
+    }
+
+    
+
+    @And("Verify the satisfaction rate of the first item in customer system")
+    public void verifyTheSatisfactionRateOfTheFirstItemInCustomerSystem() throws InterruptedException {
+
+        Thread.sleep(500);        
+        JSUtils.scrollIntoVIewJS(elements.customerInformationPage().cip_satisfactionRateNumber);
+        Assert.assertTrue(elements.customerInformationPage().cip_satisfactionRateNumber.getText().contains("9"));
+
+
+        // I scroll into view, since the element is not seen on the page. Then it scrolls down and then verifies that the point givenis nine.
+    }
+
+
+
+    @Then("Verify that the starter of the first item in customer complaint list is {string}, the section is {string}, the topic is {string} and the agent is {string}")
+    public void verify_that_the_starter_of_the_first_item_in_customer_complaint_list_is_the_section_is_the_topic_is_and_the_agent_is(String starter, String section, String topic, String agent) throws InterruptedException {
+
+        Thread.sleep(500);
+        Assert.assertEquals(starter, elements.customerComplaintPage().ccp_starter.getAttribute("alt").trim());
+        Assert.assertEquals(section, elements.customerComplaintPage().ccp_section.getText().trim());
+        Assert.assertEquals(topic, elements.customerComplaintPage().ccp_topic.getText().trim());
+        Assert.assertEquals(agent, elements.customerComplaintPage().ccp_agent.getText().trim());
+
+
+        // In this method, I verify the starter, section, topic and agent of the customer complaint page. I used trim() method, in case there is a space before or after the words.
+    }
+
+
+
+    @Then("Verify the message text {string} and {string} as the sender of this message")
+    public void verify_the_message_text_and_as_the_sender_of_this_message(String message, String sender) throws InterruptedException {
+
+        Thread.sleep(500);
+
+        List<WebElement> sendersList = elements.customerComplaintPage().ccp_messageSenders;
+
+        List<String> senderListString = new ArrayList<>();
+
+        for (WebElement webElement : sendersList) {
+
+            senderListString.add(webElement.getText());
+        }
+
+        List<WebElement> messageList = elements.customerComplaintPage().ccp_messageTexts;
+
+        List<String> messageListString = new ArrayList<>();
+
+        for (WebElement webElement : messageList) {
+
+            messageListString.add(webElement.getText());
+        }
+
+        HashMap<String, String> sendersAndMessages = new HashMap<String, String>();
+
+        for(int i = 0; i < senderListString.size(); i++){
+
+            sendersAndMessages.put(senderListString.get(i), messageListString.get(i));
+        }
+
+        Thread.sleep(500);
+
+        int flag = 0;
+
+        for(Map.Entry m : sendersAndMessages.entrySet()){
+
+            if ((m.getKey().toString().equals(sender)) && (m.getValue().toString().equals(message))){
+                counter++;
+            }
+        }
+
+        if(flag == 1){
+            Assert.assertTrue(true);
+        }else{
+            Assert.fail();
+        }
+
+
+
+        // In this method, my aim is to verify a sender name and the message of this sender together. There are names and messages side by side, and I took each group into a list and then I paired them in a hashmap. Since sender and message have to be taken together, I verify them in key and value format. I used a flag in order to verify them. 
+    }
+
+
+
+
+    @Then("Hover over to a location out of the customer message window and click")
+    public void hover_over_to_a_location_out_of_the_customer_message_window_and_click() throws InterruptedException {
+
+        Thread.sleep(500);
+        Actions actions = new Actions(Driver.getDriver());
+        actions.moveToElement(Driver.getDriver().findElement(By.tagName("body")), 0, 0);
+        actions.moveByOffset(10, 25).click().build().perform();
+
+
+
+        // I want to verify that if we click on a point out of the current window, the window will disappear. But taking a locator out of the window, on a different point in the page is impossible. So, I click on a point out of the window using x and y coordinates. 
+    }
+
+
+
+
+@Then("Select the first complaint from the Complaint section in Review Complaint Request window")
+    public void select_the_first_complaint_from_the_complaint_section_in_review_complaint_request_window() throws InterruptedException {
+
+        elements.generalRequestsPage().grp_complaintSectionReviewComplaintRequest.click();
+        Thread.sleep(500);
+        String complaintNumberAttribute = elements.generalRequestsPage().grp_complaintSectionReviewComplaintRequestFirstItem.getAttribute("title");
+        complaintNumberReviewComplaintRequest=complaintNumberAttribute.substring(complaintNumberAttribute.indexOf('C'));
+        elements.generalRequestsPage().grp_complaintSectionReviewComplaintRequestFirstItem.click();
+
+
+
+        // There are a list of complaints in a page and here, I need a data to use in my test; so I take the first complaint from the list and put its number in a variable for future use with the help of getAtrribute() method, then I click it. 
+    }
+
+
+
+
+    @Then("Verify that the process number has not been deleted")
+    public void verify_that_the_process_number_has_not_been_deleted() throws InterruptedException {
+
+        Thread.sleep(1000);
+
+        String firstStageTotal= elements.processOperationPage().pop_firstStageProcessTotalNumber.getText();
+        int firstStageTotalInt = Integer.parseInt(firstStageTotal.substring(1, firstStageTotal.indexOf(')')));
+
+        String secondStageTotal= elements.processOperationPage().pop_secondStageTotalNumber.getText();
+        int secondStageTotalInt = Integer.parseInt(secondStageTotal.substring(1, secondStageTotal.indexOf(')')));
+
+        String thirdStageTotal= elements.processOperationPage().pop_thirdStageTotalTotalNumber.getText();
+        int thirdStageTotalInt = Integer.parseInt(thirdStageTotal.substring(1, thirdStageTotal.indexOf(')')));
+
+        Assert.assertTrue((firstStageTotalInt + secondStageTotalInt + thirdStageTotalInt) > 0);
+
+
+        // This method checks that a process number has not benn deleted, so I need to check three stages and when I enter the number in search field, I expect that one of the stages has a number greater than zero. I take the number which is between parathesis with substring() method and I convert it into an integer with parseInt() method. At the end, I checked that at least one of them has a value greater than zero. 
+    }
