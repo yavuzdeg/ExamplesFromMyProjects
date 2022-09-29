@@ -1,0 +1,28 @@
+
+Below, you can find locator examples from my various projects. They are taken from Cucumber page classes. 
+The locators and their content have been changed for security purposes.
+
+
+
+    @FindBy(xpath = "//*[@class='table-field']//*[@class='sort_1']")
+    public List<WebElement> scn_NameList;
+
+
+    @FindBy(xpath = "//*[@class='table-field']//*[@class='product-details']")
+    public List<WebElement> pip_productButtonList;
+
+
+    @FindBy(xpath = "(//*[@class='search-input-container'])[3]")
+    public WebElement sip_searchResultTextbox;
+
+
+    @FindBy(xpath = "//*[@name='product_rating']//following-sibling::*[contains (@title, '5')]")
+    public WebElement prp_fivePointRating;
+
+
+    @FindBy(xpath = "(//*[@id='productTable']//td[5]//*[@class='content'])[1]")
+    public WebElement prp_productRatingFirstItem;
+
+
+    @FindBy(xpath = "//*[contains(@id, 'product-details')]")
+    public WebElement pip_productDescription;
